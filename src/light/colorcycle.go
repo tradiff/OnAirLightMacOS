@@ -2,6 +2,7 @@ package light
 
 import (
 	"log"
+	"onair/util"
 	"time"
 )
 
@@ -22,14 +23,14 @@ var ColorTable = []struct {
 	{Label: "Red(65535)", Hue: 65535, Immediate: false},
 }
 
-func ColorCycleStart(lightNumber string, startHue int, sat int, bri int) {
+func ColorCycleStart(lightNumber string, startHue int) {
 	log.Printf("Starting color cycle for light:%s", lightNumber)
 	if colorCycleRunning {
 		log.Printf("already running!")
 		return
 	}
 	colorCycleQuitChannel = make(chan bool)
-	go colorCycle(lightNumber, startHue, sat, bri)
+	go colorCycle(lightNumber, startHue)
 }
 
 func ColorCycleStop(lightNumber string) {
@@ -39,7 +40,7 @@ func ColorCycleStop(lightNumber string) {
 	colorCycleQuitChannel <- true
 }
 
-func colorCycle(lightNumber string, startColor int, sat int, bri int) {
+func colorCycle(lightNumber string, startColor int) {
 	colorCycleRunning = true
 	colorTableIdx = startColor
 	defer func() {
@@ -70,7 +71,7 @@ func colorCycle(lightNumber string, startColor int, sat int, bri int) {
 		}
 
 		log.Printf("Setting light:%s color:%s tt:%d", lightNumber, color.Label, transitionTime)
-		SetState(lightNumber, true, color.Hue, sat, bri, transitionTime)
-		time.Sleep(30 * time.Second)
+		SetState(lightNumber, true, color.Hue, util.Config.ColorSaturation, util.Config.ColorBrightness, transitionTime)
+		time.Sleep(time.Duration(util.Config.ColorCycleInterval) * time.Second)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 	"onair/camera"
 	"onair/light"
+	"onair/util"
 	"time"
 )
 
@@ -17,9 +18,9 @@ func Start() {
 			log.Printf("Camera:%t", isCameraOn)
 			isCameraOnPrev = isCameraOn
 			if isCameraOn {
-				light.ColorCycleStart("8", 0, 255, 255)
+				light.ColorCycleStart(util.Config.HueLightNumber, 0)
 			} else {
-				light.ColorCycleStop("8")
+				light.ColorCycleStop(util.Config.HueLightNumber)
 			}
 		}
 
