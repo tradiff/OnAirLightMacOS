@@ -3,18 +3,26 @@ package agent
 import (
 	"log"
 	"onair/camera"
+	"onair/light"
 	"time"
 )
 
-func Start() {
+var isCameraOnPrev = false
 
-	i := 0
+func Start() {
+	log.Println("Hello world!")
 	for {
 		isCameraOn := camera.InvokeGetCameraState()
-		log.Println("camera on:", isCameraOn)
+		if isCameraOn != isCameraOnPrev {
+			log.Printf("Camera:%t", isCameraOn)
+			isCameraOnPrev = isCameraOn
+			if isCameraOn {
+				light.ColorCycleStart("8", 0, 255, 255)
+			} else {
+				light.ColorCycleStop("8")
+			}
+		}
 
-		i++
-		log.Println("tick", i)
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
