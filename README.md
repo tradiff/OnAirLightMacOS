@@ -1,0 +1,1 @@
+Agent which turns on a light when a camera is in use.
