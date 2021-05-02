@@ -1,8 +1,10 @@
 package main
 
 import (
+	"log"
 	"onair/agent"
 	"onair/camera"
+	"onair/util"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,6 +12,12 @@ import (
 
 func main() {
 	handleGetCameraState()
+
+	_, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
 	startAgent()
 }
 

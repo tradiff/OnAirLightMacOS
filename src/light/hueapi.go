@@ -6,16 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-)
-
-// todo: configuration
-const (
-	hueUsername = "kfZqr9nqnhINjSKYlPXQ4R6TacR9nPE5Q9UOOC14"
-	hueBridgeIp = "10.0.0.112"
+	"onair/util"
 )
 
 func SetState(lightNumber string, on bool, hue int, sat int, bri int, transitionTime int) {
-	url := fmt.Sprintf("http://%s/api/%s/lights/%s/state", hueBridgeIp, hueUsername, lightNumber)
+	url := fmt.Sprintf("http://%s/api/%s/lights/%s/state", util.Config.HueBridgeIp, util.Config.HueUsername, lightNumber)
 
 	dto := map[string]interface{}{
 		"on":             on,
