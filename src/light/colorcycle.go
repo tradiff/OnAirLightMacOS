@@ -29,7 +29,7 @@ func ColorCycleStart(lightNumber string, startHue int) {
 		log.Printf("already running!")
 		return
 	}
-	colorCycleQuitChannel = make(chan bool)
+	colorCycleQuitChannel = make(chan bool, 1)
 	go colorCycle(lightNumber, startHue)
 }
 
@@ -48,15 +48,6 @@ func colorCycle(lightNumber string, startColor int) {
 	}()
 
 	for {
-
-		select {
-		case <-colorCycleQuitChannel:
-			//log.Printf("quitting")
-			return
-		default:
-			// carry on
-		}
-
 		colorTableIdx++
 		if colorTableIdx >= len(ColorTable) {
 			colorTableIdx = 0
@@ -72,6 +63,15 @@ func colorCycle(lightNumber string, startColor int) {
 
 		log.Printf("Setting light:%s color:%s tt:%d", lightNumber, color.Label, transitionTime)
 		SetState(lightNumber, true, color.Hue, util.Config.ColorSaturation, util.Config.ColorBrightness, transitionTime)
-		time.Sleep(time.Duration(util.Config.ColorCycleInterval) * time.Second)
+
+		select {
+		case <-colorCycleQuitChannel:
+			// quit the goroutine
+			return
+		case <-time.After(time.Duration(util.Config.ColorCycleInterval) * time.Second):
+			// continue to the next iteration
+			break
+		}
+
 	}
 }
